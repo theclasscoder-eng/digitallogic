@@ -112,15 +112,15 @@ export default function App() {
           </aside>
         </div>
 
-        <div className={workspaceMode === "mux" ? "h-full" : "hidden h-full"}>
+        <div className={workspaceMode === "mux" ? "h-full min-h-0 overflow-hidden" : "hidden h-full min-h-0"}>
           <MuxWorkspace />
         </div>
 
-        <div className={workspaceMode === "rom" ? "h-full" : "hidden h-full"}>
+        <div className={workspaceMode === "rom" ? "h-full min-h-0 overflow-hidden" : "hidden h-full min-h-0"}>
           <RomWorkspace />
         </div>
 
-        <div className={workspaceMode === "sequential" ? "h-full" : "hidden h-full"}>
+        <div className={workspaceMode === "sequential" ? "h-full min-h-0 overflow-hidden" : "hidden h-full min-h-0"}>
           <SequentialWorkspace />
         </div>
       </div>

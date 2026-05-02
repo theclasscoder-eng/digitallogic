@@ -20,7 +20,7 @@ export default function MuxDataInputEditor({ dataInputs, onChange }: MuxDataInpu
   };
 
   return (
-    <div className="max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white">
+    <div className="min-h-0 overflow-y-auto rounded-xl border border-slate-200 bg-white">
       <table className="w-full border-collapse text-xs">
         <thead className="sticky top-0 bg-slate-100">
           <tr>

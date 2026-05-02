@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { toPng } from "html-to-image";
 import { normalizeVariableName, sortVariableNames } from "../../expression/variableUtils";
 import BriefDescriptionButton from "../common/BriefDescriptionButton";
+import ScrollableSection from "../layout/ScrollableSection";
 import { solveMuxDataInputsFromExpression } from "../../mux/muxDataInputSolver";
 import { collectMuxVariablesFromExpression } from "../../mux/muxEvaluator";
 import { generateMuxTruthTable } from "../../mux/muxTruthTable";
@@ -205,121 +206,128 @@ export default function MuxWorkspace() {
           <BriefDescriptionButton topic="mux" />
         </div>
 
-        <div className="mt-3 space-y-3 overflow-y-auto pr-1">
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-slate-500">MUX Size</label>
-            <select
-              value={config.size}
-              onChange={(event) => handleSizeChange(Number.parseInt(event.target.value, 10) as MuxSize)}
-              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 focus:border-cyan-500 focus:outline-none"
-            >
-              <option value={2}>2:1</option>
-              <option value={4}>4:1</option>
-              <option value={8}>8:1</option>
-              <option value={16}>16:1</option>
-            </select>
-          </div>
+        <div className="mt-3 grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1fr)_auto] gap-3 overflow-hidden">
+          <ScrollableSection title="MUX Structure" className="min-h-0">
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wide text-slate-500">MUX Size</label>
+                <select
+                  value={config.size}
+                  onChange={(event) => handleSizeChange(Number.parseInt(event.target.value, 10) as MuxSize)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-700 focus:border-cyan-500 focus:outline-none"
+                >
+                  <option value={2}>2:1</option>
+                  <option value={4}>4:1</option>
+                  <option value={8}>8:1</option>
+                  <option value={16}>16:1</option>
+                </select>
+              </div>
 
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Input Variables</label>
-            <textarea
-              value={variablesText}
-              onChange={(event) => setVariablesText(event.target.value)}
-              className="mt-1 h-20 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm text-slate-800 focus:border-cyan-500 focus:outline-none"
-              placeholder="A, B, C, D"
-            />
-            <button
-              type="button"
-              className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-cyan-400"
-              onClick={handleVariablesApply}
-            >
-              Apply Variables
-            </button>
-          </div>
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Input Variables</label>
+                <textarea
+                  value={variablesText}
+                  onChange={(event) => setVariablesText(event.target.value)}
+                  className="mt-1 h-20 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm text-slate-800 focus:border-cyan-500 focus:outline-none"
+                  placeholder="A, B, C, D"
+                />
+                <button
+                  type="button"
+                  className="mt-2 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-cyan-400"
+                  onClick={handleVariablesApply}
+                >
+                  Apply Variables
+                </button>
+              </div>
 
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Select Line Variables</label>
-            <div className="mt-1 space-y-2">
-              {Array.from({ length: selectCount }, (_, index) => (
-                <div key={`select-line-${index}`} className="flex items-center gap-2">
-                  <span className="w-12 text-xs font-semibold text-slate-600">S{index}</span>
-                  <select
-                    value={config.selectVariables[index] ?? ""}
-                    onChange={(event) => handleSelectVariableChange(index, event.target.value)}
-                    className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 focus:border-cyan-500 focus:outline-none"
-                  >
-                    {config.variables.map((variable) => (
-                      <option key={variable} value={variable}>
-                        {variable}
-                      </option>
-                    ))}
-                  </select>
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Select Line Variables</label>
+                <div className="mt-1 space-y-2">
+                  {Array.from({ length: selectCount }, (_, index) => (
+                    <div key={`select-line-${index}`} className="flex items-center gap-2">
+                      <span className="w-12 text-xs font-semibold text-slate-600">S{index}</span>
+                      <select
+                        value={config.selectVariables[index] ?? ""}
+                        onChange={(event) => handleSelectVariableChange(index, event.target.value)}
+                        className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 focus:border-cyan-500 focus:outline-none"
+                      >
+                        {config.variables.map((variable) => (
+                          <option key={variable} value={variable}>
+                            {variable}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Output Label</label>
+                <input
+                  value={config.outputLabel}
+                  onChange={(event) => applyConfig({ ...config, outputLabel: event.target.value || "F" })}
+                  className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 focus:border-cyan-500 focus:outline-none"
+                  placeholder="F"
+                />
+              </div>
             </div>
-          </div>
+          </ScrollableSection>
 
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Output Label</label>
-            <input
-              value={config.outputLabel}
-              onChange={(event) => applyConfig({ ...config, outputLabel: event.target.value || "F" })}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 focus:border-cyan-500 focus:outline-none"
-              placeholder="F"
-            />
-          </div>
+          <ScrollableSection title="Expression Tools" className="min-h-0">
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Source Expression</label>
+                <textarea
+                  value={config.sourceExpression ?? ""}
+                  onChange={(event) => applyConfig({ ...config, sourceExpression: event.target.value })}
+                  className="mt-1 h-24 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm text-slate-800 focus:border-cyan-500 focus:outline-none"
+                  placeholder="F = A'B + C"
+                />
+              </div>
 
-          <div>
-            <label className="text-xs font-bold uppercase tracking-wide text-slate-500">Source Expression</label>
-            <textarea
-              value={config.sourceExpression ?? ""}
-              onChange={(event) => applyConfig({ ...config, sourceExpression: event.target.value })}
-              className="mt-1 h-24 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm text-slate-800 focus:border-cyan-500 focus:outline-none"
-              placeholder="F = A'B + C"
-            />
-          </div>
-
-          <div>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-slate-500">Data Inputs</h3>
-            <div className="mt-1">
-              <MuxDataInputEditor
-                dataInputs={config.dataInputs}
-                onChange={(nextDataInputs) => applyConfig({ ...config, dataInputs: nextDataInputs })}
-              />
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="rounded-lg border border-cyan-400 bg-cyan-50 px-3 py-2 text-xs font-semibold text-cyan-800 hover:bg-cyan-100"
+                  onClick={handleGenerateFromExpression}
+                >
+                  Generate MUX Realization
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-cyan-400"
+                  onClick={handleGenerateTruthTable}
+                >
+                  Generate Truth Table
+                </button>
+                <button
+                  type="button"
+                  className="rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-semibold text-emerald-700 hover:border-emerald-400"
+                  onClick={handleExportDiagram}
+                >
+                  Export MUX Diagram
+                </button>
+              </div>
             </div>
+          </ScrollableSection>
+
+          <ScrollableSection title="Data Inputs" className="min-h-0">
+            <MuxDataInputEditor
+              dataInputs={config.dataInputs}
+              onChange={(nextDataInputs) => applyConfig({ ...config, dataInputs: nextDataInputs })}
+            />
+          </ScrollableSection>
+
+          <div className="space-y-2">
+            {error ? (
+              <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">{error}</p>
+            ) : null}
+
+            {message ? (
+              <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">{message}</p>
+            ) : null}
           </div>
-
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              className="rounded-lg border border-cyan-400 bg-cyan-50 px-3 py-2 text-xs font-semibold text-cyan-800 hover:bg-cyan-100"
-              onClick={handleGenerateFromExpression}
-            >
-              Generate MUX Realization
-            </button>
-            <button
-              type="button"
-              className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-cyan-400"
-              onClick={handleGenerateTruthTable}
-            >
-              Generate Truth Table
-            </button>
-            <button
-              type="button"
-              className="rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-semibold text-emerald-700 hover:border-emerald-400"
-              onClick={handleExportDiagram}
-            >
-              Export MUX Diagram
-            </button>
-          </div>
-
-          {error ? (
-            <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">{error}</p>
-          ) : null}
-
-          {message ? (
-            <p className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">{message}</p>
-          ) : null}
         </div>
       </section>
 

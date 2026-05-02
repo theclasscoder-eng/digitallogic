@@ -72,7 +72,10 @@ export default function Canvas() {
   );
 
   return (
-    <div id="logic-canvas-root" className="relative h-full w-full rounded-2xl border border-slate-200 bg-white">
+    <div
+      id="logic-canvas-root"
+      className="relative h-full min-h-0 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white"
+    >
       <ReactFlow<LogicNode, LogicEdge>
         nodes={nodes}
         edges={styledEdges}
